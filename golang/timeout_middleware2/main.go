@@ -48,6 +48,7 @@ func Timeout(t time.Duration) gin.HandlerFunc {
 		case <-ctx.Done():
 			c.Writer.WriteHeader(http.StatusGatewayTimeout)
 			c.Abort()
+			// 如果程序block在gRPC上，则终止执行
 			cancel()
 			// 如果超时的话，buffer无法主动清除，只能等待GC回收
 		case <-finish:
