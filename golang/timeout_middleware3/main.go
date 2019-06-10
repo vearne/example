@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"github.com/vearne/gin"
 	"github.com/vearne/golib/buffpool"
 	"github.com/vearne/golib/utils"
 	"google.golang.org/grpc"
@@ -39,6 +39,7 @@ type errResponse struct {
 	Msg  string `json:"msg"`
 }
 
+
 type TimeoutWriter struct {
 	gin.ResponseWriter
 	// body
@@ -47,8 +48,9 @@ type TimeoutWriter struct {
 	h http.Header
 
 	mu sync.Mutex
-
 	timedOut    bool
+	wroteHeader bool
+	code int
 }
 
 func (tw *TimeoutWriter) Write(b []byte) (int, error) {
@@ -59,23 +61,51 @@ func (tw *TimeoutWriter) Write(b []byte) (int, error) {
 		// 已经超时了，就不再写数据
 		return 0, nil
 	}
+
 	return tw.body.Write(b)
+}
+
+func (tw *TimeoutWriter) WriteHeader(code int){
+	fmt.Println("----xxx---", "TimeoutWriter-WriteHeader")
+	checkWriteHeaderCode(code)
+	tw.mu.Lock()
+	defer tw.mu.Unlock()
+	if tw.timedOut || tw.wroteHeader {
+		return
+	}
+	tw.writeHeader(code)
+}
+
+func (tw *TimeoutWriter) writeHeader(code int) {
+	tw.wroteHeader = true
+	tw.code = code
+}
+
+func (tw *TimeoutWriter) WriteHeaderNow(){
+	fmt.Println("----xxx---", "TimeoutWriter-WriteHeaderNow")
 }
 
 func (tw *TimeoutWriter) Header() http.Header {
 	return tw.h
 }
 
+func checkWriteHeaderCode(code int) {
+	if code < 100 || code > 999 {
+		panic(fmt.Sprintf("invalid WriteHeader code %v", code))
+	}
+}
+
 
 func Timeout(t time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// wrap the request context with a timeout
 		// sync.Pool
 		buffer := buffpool.GetBuff()
 
 		tw := &TimeoutWriter{body: buffer, ResponseWriter: c.Writer, h: make(http.Header)}
 		c.Writer = tw
 
-		// wrap the request context with a timeout
+
 		ctx, cancel := context.WithTimeout(c.Request.Context(), t)
 		c.Request = c.Request.WithContext(ctx)
 
@@ -115,7 +145,8 @@ func Timeout(t time.Duration) gin.HandlerFunc {
 			for k, vv := range tw.Header() {
 				dst[k] = vv
 			}
-			//tw.ResponseWriter.WriteHeader(401)
+			fmt.Println("tw.code", tw.code)
+			tw.ResponseWriter.WriteHeader(tw.code)
 			tw.ResponseWriter.Write(buffer.Bytes())
 			buffpool.PutBuff(buffer)
 		}
@@ -128,14 +159,13 @@ func short(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"hello": "world"})
 }
 
+func nocontent(c *gin.Context) {
+	//c.Status(204)
+	time.Sleep(1 * time.Second)
+	c.Data(http.StatusNoContent, "", []byte{})
+}
+
 func long(c *gin.Context) {
-	// Set up a connection to the server.
-	//conn, err := grpc.Dial(address, grpc.WithInsecure())
-	//if err != nil {
-	//	log.Fatalf("did not connect: %v", err)
-	//}
-	////defer conn.Close()
-	//greeter := pb.NewGreeterClient(conn)
 	name := defaultName
 	ctx := c.Request.Context()
 	r, err := greeter.SayHello(ctx, &pb.HelloRequest{Name: name})
@@ -159,6 +189,8 @@ func main() {
 
 	// create a route that will last 5 seconds
 	engine.GET("/long", long)
+
+	engine.GET("/nocontent", nocontent)
 
 	// run the server
 	log.Fatal(engine.Run(":8080"))
