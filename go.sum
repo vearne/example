@@ -12,6 +12,7 @@ github.com/golang/mock v1.1.1/go.mod h1:oTYuIxOrZwtPieC+H1uAHpcLFnEyAGVDL/k47Jfb
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.3.1 h1:YF8+flBXS5eO826T4nzqPrxfhQThhXl0YzfuUPu4SBg=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
+github.com/imroc/req v0.2.3 h1:ElMCifcqg/1GonGloyyTUrj6D6IITL6EiNEKHUl4xZM=
 github.com/imroc/req v0.2.3/go.mod h1:J9FsaNHDTIVyW/b5r6/Df5qKEEEq2WzZKIgKSajd1AE=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/mattn/go-isatty v0.0.7 h1:UvyT9uN+3r7yLEYSlJsbQGdsaB/a0DlgWP3pql6iwOc=
@@ -26,6 +27,8 @@ github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGr
 github.com/vearne/gin v0.0.0-20190610140851-65e9e4976e5c/go.mod h1:nVQ2O/qkJ2RNPmmoc5H2SSjuWbksX4JKF2XQK4IeyCA=
 github.com/vearne/golib v0.0.0-20190605100809-8dd1c57c618a h1:2M0VfgYMfZDmkjYT2cZZv4+swYJQT1UauO+li3sPriw=
 github.com/vearne/golib v0.0.0-20190605100809-8dd1c57c618a/go.mod h1:fGeaL2NuQoLrTQdTmAE4GT+K0NKMRSF0goIB2lwWJIY=
+github.com/vearne/golib v0.0.2 h1:sQ8QJsCw2fMC+qNQJkNXSsVzbDe0vuV42+7IIzclwPc=
+github.com/vearne/golib v0.0.2/go.mod h1:fGeaL2NuQoLrTQdTmAE4GT+K0NKMRSF0goIB2lwWJIY=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3/go.mod h1:6SW0HCj/g11FgYtHlgUYUwCkIfeOF89ocIRzGO/8vkc=
 golang.org/x/net v0.0.0-20190311183353-d8887717615a/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
