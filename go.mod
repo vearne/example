@@ -19,6 +19,7 @@ require (
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/vearne/gin v0.0.0-20190610140851-65e9e4976e5c
 	github.com/vearne/golib v0.0.3
+	github.com/vearne/worker_manager v0.0.0-20190823054854-012965ebffa5
 	go.opencensus.io v0.22.0 // indirect
 	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
 	golang.org/x/exp v0.0.0-20190627132806-fd42eb6b336f // indirect
@@ -31,5 +32,5 @@ require (
 	google.golang.org/api v0.7.0 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
 	google.golang.org/genproto v0.0.0-20190627203621-eb59cef1c072 // indirect
-	google.golang.org/grpc v1.21.1
+	google.golang.org/grpc v1.23.0
 )
