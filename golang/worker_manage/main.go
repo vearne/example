@@ -28,13 +28,11 @@ func main() {
 
 func GracefulExit(wm *manager.WorkerManager) {
 	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGTERM)
-	switch <-ch {
-	case syscall.SIGTERM, syscall.SIGINT:
-		log.Println("got signal")
-		wm.Stop()
-		break
-	}
+	signal.Notify(ch, syscall.SIGTERM, syscall.SIGINT)
+	sig := <-ch
+
+	log.Printf("got a signal, signal:%v", sig)
+	wm.Stop()
 }
 
 func prepareAllWorker() *manager.WorkerManager {
