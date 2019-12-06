@@ -19,7 +19,7 @@ require (
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/vearne/gin v0.0.0-20190610140851-65e9e4976e5c
 	github.com/vearne/golib v0.0.3
-	github.com/vearne/worker_manager v0.0.0-20190823054854-012965ebffa5
+	github.com/vearne/worker_manager v0.0.0-20191206020630-e0ca6506b611
 	go.opencensus.io v0.22.0 // indirect
 	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
 	golang.org/x/exp v0.0.0-20190627132806-fd42eb6b336f // indirect

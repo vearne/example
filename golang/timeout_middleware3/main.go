@@ -9,6 +9,7 @@ import (
 	"github.com/vearne/golib/buffpool"
 	"github.com/vearne/golib/utils"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/encoding"
 	pb "google.golang.org/grpc/examples/helloworld/helloworld"
 	"log"
 	"net/http"
@@ -26,7 +27,14 @@ const (
 var greeter pb.GreeterClient
 
 func init(){
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+
+
+	func init() {
+		encoding.RegisterCodec(protoCodec{})
+	}
+	conn, err := grpc.Dial(address,
+		grpc.WithDefaultCallOptions(grpc.CallContentSubtype("json")),
+		grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
