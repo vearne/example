@@ -117,7 +117,7 @@ func Timeout(t time.Duration) gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), t)
 		c.Request = c.Request.WithContext(ctx)
 
-		finish := make(chan struct{})
+		finish := make(chan struct{}, 1)
 		panicChan := make(chan interface{}, 1)
 		go func() {
 			defer func() {
