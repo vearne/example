@@ -27,7 +27,6 @@ func test1(){
 	if err != nil {
 		panic(err)
 	}
-	sess.SetStreamMode(false)
 	sess.SetWindowSize(4096, 4096)
 	sess.SetWriteDelay(true)
 	sess.SetACKNoDelay(false)
@@ -65,7 +64,6 @@ func test2(){
 	if err != nil {
 		panic(err)
 	}
-	sess.SetStreamMode(false)
 	sess.SetWindowSize(4096, 4096)
 	sess.SetWriteDelay(true)
 	sess.SetACKNoDelay(false)

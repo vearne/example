@@ -15,7 +15,6 @@ func listenEcho() (net.Listener, error) {
 }
 
 func handleEcho(sess *kcp.UDPSession) {
-	sess.SetStreamMode(true)
 	sess.SetWindowSize(4096, 4096)
 	sess.SetWriteDelay(true)
 	sess.SetACKNoDelay(false)
