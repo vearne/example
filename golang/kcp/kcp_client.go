@@ -101,8 +101,8 @@ func test2(){
 
 func main() {
 	// 测试小包
-	//test1()
+	test1()
 	// 测试拆包的情况
-	test2()
+	//test2()
 }
 
