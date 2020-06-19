@@ -13,7 +13,6 @@ require (
 	github.com/imroc/req v0.2.4 // indirect
 	github.com/klauspost/reedsolomon v1.9.7 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/prometheus/common v0.6.0 // indirect
 	github.com/prometheus/procfs v0.0.3 // indirect
 	github.com/sirupsen/logrus v1.4.2 // indirect
@@ -25,14 +24,15 @@ require (
 	github.com/vearne/worker_manager v0.0.0-20191206020630-e0ca6506b611
 	github.com/xtaci/kcp-go v5.4.20+incompatible // indirect
 	go.opencensus.io v0.22.0 // indirect
+	go.uber.org/zap v1.15.0 // indirect
 	golang.org/x/exp v0.0.0-20190627132806-fd42eb6b336f // indirect
 	golang.org/x/image v0.0.0-20190622003408-7e034cad6442 // indirect
 	golang.org/x/mobile v0.0.0-20190607214518-6fa95d984e88 // indirect
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
-	golang.org/x/tools v0.0.0-20190628222527-fb37f6ba8261 // indirect
 	google.golang.org/api v0.7.0 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
 	google.golang.org/genproto v0.0.0-20190627203621-eb59cef1c072 // indirect
 	google.golang.org/grpc v1.23.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
