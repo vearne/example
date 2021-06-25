@@ -32,8 +32,3 @@ func TestSomething(t *testing.T) {
 		t.Errorf("got = %v; expected = %v", got, expected)
 	}
 }
-
-// 业务逻辑
-func BizLogic(p People, s string) string {
-	return "People Say:" + p.Say(s)
-}
