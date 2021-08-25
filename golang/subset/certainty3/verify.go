@@ -15,7 +15,6 @@ import (
  */
 // 假定 50 client, 100 backend
 const (
-	//clientSize  = 50
 	clientSize  = 40
 	backendSize = 100
 	subsetSize  = 50
@@ -87,8 +86,6 @@ func Subset(backends []int, clientID, subsetSize int) []int {
 	subsetID := clientID % subsetCount
 
 	start := subsetID * subsetSize
-
-	fmt.Printf("clientID:%v, round:%v, start:%v, end:%v\n", clientID, round, start, start+subsetSize)
 	return backends[start : start+subsetSize]
 }
 

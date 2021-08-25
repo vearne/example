@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"github.com/spaolacci/murmur3"
 	"math"
 	"math/rand"
 	"os"
@@ -12,11 +13,10 @@ import (
 /*
 	data <- read.table("/tmp/datafile.csv",header=TRUE, sep=",")
 	ggplot(data, aes(X, Y)) + geom_bar(stat = 'identity')
- */
+*/
 // 假定 50 client, 100 backend
 const (
-	//clientSize  = 50
-	clientSize  = 40
+	clientSize  = 50
 	backendSize = 100
 	subsetSize  = 50
 	// 假定Client的负载是均衡的，某个时间段里每个Client处理100000个请求
@@ -40,13 +40,19 @@ func main() {
 	// clientID -> client上对应的负载
 	var loadMap map[int]int = make(map[int]int)
 
+
+
 	for i := 0; i < clientSize; i++ {
 		backends := make([]int, 0)
 		for i := 0; i < backendSize; i++ {
 			backends = append(backends, i)
 		}
 
-		subset := Subset(backends, i, subsetSize)
+		// 构造ClientID
+		// 这里根据IP通过hash计算ClientID
+		//IP的范围从 192.168.1.1 ~ 192.168.1.50
+		clientID := calcuMurmur64(fmt.Sprintf("192.168.1.%d", i+1))
+		subset := Subset(backends, clientID, subsetSize)
 		//fmt.Println("len(subset)", len(subset))
 		for _, backendID := range subset {
 			loadMap[backendID] += clientTotalReq / len(subset)
@@ -87,12 +93,10 @@ func Subset(backends []int, clientID, subsetSize int) []int {
 	subsetID := clientID % subsetCount
 
 	start := subsetID * subsetSize
-
-	fmt.Printf("clientID:%v, round:%v, start:%v, end:%v\n", clientID, round, start, start+subsetSize)
 	return backends[start : start+subsetSize]
 }
 
-func WriteCSV(loadMap map[int]int){
+func WriteCSV(loadMap map[int]int) {
 	// 创建一个 tutorials.csv 文件
 	csvFile, err := os.Create("/tmp/datafile.csv")
 	if err != nil {
@@ -101,8 +105,18 @@ func WriteCSV(loadMap map[int]int){
 	defer csvFile.Close()
 	writer := csv.NewWriter(csvFile)
 	writer.Write([]string{"X", "Y"})
-	for i:=0;i<len(loadMap);i++{
+	for i := 0; i < len(loadMap); i++ {
 		writer.Write([]string{"clientID:" + strconv.Itoa(i), strconv.Itoa(loadMap[i])})
 	}
 	writer.Flush()
+}
+
+func calcuMurmur64(str string) int {
+	h32 := murmur3.New64()
+	h32.Write([]byte(str))
+	x := int(h32.Sum64())
+	if x < 0 {
+		return -x
+	}
+	return x
 }
