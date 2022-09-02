@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 )
 
@@ -10,11 +11,19 @@ func main() {
 	go func() {
 		for {
 			n++
-			//fmt.Println(n)
+			fmt.Println("goroutine1:", n)
 		}
 	}()
 	//runtime.Gosched()
 	for {
 		n++
+		fmt.Println("goroutine2:", n)
 	}
+}
+
+func fibR(i int) int {
+	if i < 2 {
+		return i
+	}
+	return fibR(i-1) + fibR(i-2)
 }
