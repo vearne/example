@@ -3,20 +3,26 @@ package reedsolomon
 import (
 	"runtime"
 
-	"github.com/klauspost/cpuid"
+	"github.com/klauspost/cpuid/v2"
 )
 
 // Option allows to override processing parameters.
 type Option func(*options)
 
 type options struct {
-	maxGoroutines                         int
-	minSplitSize                          int
+	maxGoroutines int
+	minSplitSize  int
+	shardSize     int
+	perRound      int
+
 	useAVX512, useAVX2, useSSSE3, useSSE2 bool
+	useJerasureMatrix                     bool
 	usePAR1Matrix                         bool
 	useCauchy                             bool
-	shardSize                             int
-	perRound                              int
+	fastOneParity                         bool
+	inversionCache                        bool
+	customMatrix                          [][]byte
+	withLeopard                           *bool
 
 	// stream options
 	concReads  bool
@@ -25,14 +31,16 @@ type options struct {
 }
 
 var defaultOptions = options{
-	maxGoroutines: 384,
-	minSplitSize:  -1,
+	maxGoroutines:  384,
+	minSplitSize:   -1,
+	fastOneParity:  false,
+	inversionCache: true,
 
 	// Detect CPU capabilities.
-	useSSSE3:  cpuid.CPU.SSSE3(),
-	useSSE2:   cpuid.CPU.SSE2(),
-	useAVX2:   cpuid.CPU.AVX2(),
-	useAVX512: cpuid.CPU.AVX512F() && cpuid.CPU.AVX512BW(),
+	useSSSE3:  cpuid.CPU.Supports(cpuid.SSSE3),
+	useSSE2:   cpuid.CPU.Supports(cpuid.SSE2),
+	useAVX2:   cpuid.CPU.Supports(cpuid.AVX2),
+	useAVX512: cpuid.CPU.Supports(cpuid.AVX512F, cpuid.AVX512BW),
 }
 
 func init() {
@@ -106,6 +114,15 @@ func WithConcurrentStreamWrites(enabled bool) Option {
 	}
 }
 
+// WithInversionCache allows to control the inversion cache.
+// This will cache reconstruction matrices so they can be reused.
+// Enabled by default.
+func WithInversionCache(enabled bool) Option {
+	return func(o *options) {
+		o.inversionCache = enabled
+	}
+}
+
 // WithStreamBlockSize allows to set a custom block size per round of reads/writes.
 // If not set, any shard size set with WithAutoGoroutines will be used.
 // If WithAutoGoroutines is also unset, 4MB will be used.
@@ -116,27 +133,47 @@ func WithStreamBlockSize(n int) Option {
 	}
 }
 
-func withSSSE3(enabled bool) Option {
+// WithSSSE3 allows to enable/disable SSSE3 instructions.
+// If not set, SSSE3 will be turned on or off automatically based on CPU ID information.
+func WithSSSE3(enabled bool) Option {
 	return func(o *options) {
 		o.useSSSE3 = enabled
 	}
 }
 
-func withAVX2(enabled bool) Option {
+// WithAVX2 allows to enable/disable AVX2 instructions.
+// If not set, AVX2 will be turned on or off automatically based on CPU ID information.
+func WithAVX2(enabled bool) Option {
 	return func(o *options) {
 		o.useAVX2 = enabled
 	}
 }
 
-func withSSE2(enabled bool) Option {
+// WithSSE2 allows to enable/disable SSE2 instructions.
+// If not set, SSE2 will be turned on or off automatically based on CPU ID information.
+func WithSSE2(enabled bool) Option {
 	return func(o *options) {
 		o.useSSE2 = enabled
 	}
 }
 
-func withAVX512(enabled bool) Option {
+// WithAVX512 allows to enable/disable AVX512 instructions.
+// If not set, AVX512 will be turned on or off automatically based on CPU ID information.
+func WithAVX512(enabled bool) Option {
 	return func(o *options) {
 		o.useAVX512 = enabled
+	}
+}
+
+// WithJerasureMatrix causes the encoder to build the Reed-Solomon-Vandermonde
+// matrix in the same way as done by the Jerasure library.
+// The first row and column of the coding matrix only contains 1's in this method
+// so the first parity chunk is always equal to XOR of all data chunks.
+func WithJerasureMatrix() Option {
+	return func(o *options) {
+		o.useJerasureMatrix = true
+		o.usePAR1Matrix = false
+		o.useCauchy = false
 	}
 }
 
@@ -146,6 +183,7 @@ func withAVX512(enabled bool) Option {
 // shards.
 func WithPAR1Matrix() Option {
 	return func(o *options) {
+		o.useJerasureMatrix = false
 		o.usePAR1Matrix = true
 		o.useCauchy = false
 	}
@@ -157,7 +195,40 @@ func WithPAR1Matrix() Option {
 // but will result in slightly faster start-up time.
 func WithCauchyMatrix() Option {
 	return func(o *options) {
-		o.useCauchy = true
+		o.useJerasureMatrix = false
 		o.usePAR1Matrix = false
+		o.useCauchy = true
+	}
+}
+
+// WithFastOneParityMatrix will switch the matrix to a simple xor
+// if there is only one parity shard.
+// The PAR1 matrix already has this property so it has little effect there.
+func WithFastOneParityMatrix() Option {
+	return func(o *options) {
+		o.fastOneParity = true
+	}
+}
+
+// WithCustomMatrix causes the encoder to use the manually specified matrix.
+// customMatrix represents only the parity chunks.
+// customMatrix must have at least ParityShards rows and DataShards columns.
+// It can be used for interoperability with libraries which generate
+// the matrix differently or to implement more complex coding schemes like LRC
+// (locally reconstructible codes).
+func WithCustomMatrix(customMatrix [][]byte) Option {
+	return func(o *options) {
+		o.customMatrix = customMatrix
+	}
+}
+
+// WithLeopardGF16 will always use leopard GF16 for encoding,
+// even when there is less than 256 shards.
+// This will likely improve reconstruction time for some setups.
+// This is not compatible with Leopard output for <= 256 shards.
+// Note that Leopard places certain restrictions on use see other documentation.
+func WithLeopardGF16(enabled bool) Option {
+	return func(o *options) {
+		o.withLeopard = &enabled
 	}
 }

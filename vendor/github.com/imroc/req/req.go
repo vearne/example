@@ -257,7 +257,6 @@ func (r *Req) Do(method, rawurl string, vs ...interface{}) (resp *Resp, err erro
 			progress = vv
 		case context.Context:
 			req = req.WithContext(vv)
-			resp.req = req
 		case error:
 			return nil, vv
 		}
