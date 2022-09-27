@@ -4,6 +4,23 @@ import (
 	"testing"
 )
 
+func TestDiv(t *testing.T) {
+	testcases := []struct {
+		a, b, want int
+	}{
+		{10, 2, 5},
+		{5, 3, 1},
+		{-6, 3, -2},
+		{-6, -3, 2},
+	}
+	for _, tc := range testcases {
+		result := Div(tc.a, tc.b)
+		if Div(tc.a, tc.b) != tc.want {
+			t.Errorf("Div: %q, want %q", result, tc.want)
+		}
+	}
+}
+
 func FuzzDiv(f *testing.F) {
 	testcases := []struct {
 		a, b int
