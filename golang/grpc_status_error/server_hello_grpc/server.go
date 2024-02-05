@@ -41,11 +41,9 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	case 0:
 		return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 	case 1:
-		return &pb.HelloReply{Message: "Hello " + in.Name},
-			status.Error(codes.DataLoss, "--DataLoss--")
+		return nil, status.Error(codes.DataLoss, "--DataLoss--")
 	default:
-		return &pb.HelloReply{Message: "Hello " + in.Name},
-			status.Error(codes.Unauthenticated, "--Unauthenticated--")
+		return nil, status.Error(codes.Unauthenticated, "--Unauthenticated--")
 	}
 }
 
