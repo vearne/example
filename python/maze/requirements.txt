@@ -1,0 +1,6 @@
+langchain==0.3.27
+langchain-community==0.3.27
+langchain-core==0.3.76
+langchain-ollama==0.3.8
+langchain-openai==0.3.30
+langchain-text-splitters==0.3.9
